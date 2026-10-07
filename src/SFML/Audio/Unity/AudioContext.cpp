@@ -264,9 +264,18 @@ base::Optional<PlaybackDeviceHandle> AudioContext::getDefaultPlaybackDeviceHandl
 {
     ensureInstalled();
 
-    for (const PlaybackDeviceHandle& deviceHandle : getAvailablePlaybackDeviceHandles())
+    const auto deviceHandles = getAvailablePlaybackDeviceHandles();
+
+    for (const PlaybackDeviceHandle& deviceHandle : deviceHandles)
         if (deviceHandle.isDefault())
             return base::makeOptional(deviceHandle);
+
+#ifdef SFML_SYSTEM_ANDROID
+    // miniaudio's AAudio and OpenSL ES backends have no device enumeration: they only ever report the
+    // system default device, without flagging it as such. That single entry is the default device.
+    if (!deviceHandles.empty())
+        return base::makeOptional(deviceHandles[0]);
+#endif
 
     return base::nullOpt;
 }
@@ -291,9 +300,17 @@ base::Optional<CaptureDeviceHandle> AudioContext::getDefaultCaptureDeviceHandle(
 {
     ensureInstalled();
 
-    for (const CaptureDeviceHandle& deviceHandle : getAvailableCaptureDeviceHandles())
+    const auto deviceHandles = getAvailableCaptureDeviceHandles();
+
+    for (const CaptureDeviceHandle& deviceHandle : deviceHandles)
         if (deviceHandle.isDefault())
             return base::makeOptional(deviceHandle);
+
+#ifdef SFML_SYSTEM_ANDROID
+    // Same as for playback devices: the single reported entry is the default device.
+    if (!deviceHandles.empty())
+        return base::makeOptional(deviceHandles[0]);
+#endif
 
     return base::nullOpt;
 }
