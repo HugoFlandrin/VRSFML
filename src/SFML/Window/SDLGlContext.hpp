@@ -88,6 +88,14 @@ private:
     SDL_Window*         m_window;     // SDL window associated with the context
     SDL_GLContextState* m_context;    // SDL OpenGL context handle
     bool                m_ownsWindow; // Whether the context owns the window (for offscreen contexts)
+#ifdef SFML_SYSTEM_ANDROID
+    // Android: SDL only supports one window and one EGL surface per window, and a surface can only be
+    // current in one thread at a time. So the shared context and the per-thread contexts are created
+    // with EGL directly and live without any window (surfaceless, or on a tiny pbuffer); only the
+    // context of the (single) application window goes through SDL and uses the window's surface.
+    bool  m_androidOffscreen{false}; // True for contexts that never touch the window surface
+    void* m_androidSurface{nullptr}; // EGLSurface (pbuffer) used by offscreen contexts, if surfaceless is unsupported
+#endif
 #ifdef SFML_SYSTEM_EMSCRIPTEN
     bool m_vsyncRequested{true}; // Emscripten VSync support needs manual handling
 #endif
