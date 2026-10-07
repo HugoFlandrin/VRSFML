@@ -47,7 +47,7 @@
 #include <freetype/ftsystem.h>
 #include <freetype/fttypes.h>
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     #include "SFML/System/Android/ResourceStream.hpp"
 #endif
 
@@ -557,7 +557,7 @@ base::Optional<FontFace> FontFace::openFromFile(const Path& filename)
 {
     base::Optional<FontFace> result;
 
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     auto optStream = FileInputStream::open(filename);
     if (!optStream.hasValue())
     {

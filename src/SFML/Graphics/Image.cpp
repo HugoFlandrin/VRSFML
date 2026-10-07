@@ -30,7 +30,7 @@
 #include "SFML/Base/UniquePtr.hpp"
 #include "SFML/Base/Vector.hpp"
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     #include "SFML/System/Android/Activity.hpp"
     #include "SFML/System/Android/ResourceStream.hpp"
 #endif
@@ -234,7 +234,7 @@ base::Optional<Image> Image::loadFromFile(const Path& filename)
 {
     base::Optional<Image> result; // Use a single local variable for NRVO
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
 
     if (priv::getActivityStatesPtr() != nullptr)
     {

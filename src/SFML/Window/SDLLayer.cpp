@@ -1177,8 +1177,12 @@ bool SDLLayer::applyGLContextSettings(const ContextSettings& settings) const
     result &= setGLAttribute(SDL_GL_CONTEXT_MINOR_VERSION, static_cast<int>(settings.minorVersion));
 
     // Set context flags
+#ifdef SFML_SYSTEM_ANDROID
+    result &= setGLAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+#else
     result &= setGLAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                              settings.isCore() ? SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+#endif
     result &= setGLAttribute(SDL_GL_CONTEXT_FLAGS, settings.isDebug() ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
 
     return result;

@@ -82,10 +82,7 @@ elseif(SFML_OS_IOS)
         ${SRCROOT}/iOS/SFMain.mm
     )
 elseif(SFML_OS_ANDROID)
-    set(PLATFORM_SRC
-        ${SRCROOT}/Android/SensorImpl.cpp
-        ${SRCROOT}/Android/SensorImpl.hpp
-    )
+    set(PLATFORM_SRC)
 endif()
 
 # define the sfml-window target

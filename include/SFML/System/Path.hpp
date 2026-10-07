@@ -35,7 +35,7 @@ namespace sf
 class [[nodiscard]] SFML_SYSTEM_API Path
 {
 public:
-#if defined(SFML_SYSTEM_EMSCRIPTEN) || defined(SFML_SYSTEM_LINUX_OR_BSD)
+#if defined(SFML_SYSTEM_EMSCRIPTEN) || defined(SFML_SYSTEM_LINUX_OR_BSD) || defined(SFML_SYSTEM_ANDROID)
     using value_type = char;
 #else
     using value_type = wchar_t;

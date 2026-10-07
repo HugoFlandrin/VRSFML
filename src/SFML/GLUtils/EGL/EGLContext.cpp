@@ -23,7 +23,7 @@
 #include "SFML/Base/Vector.hpp"
 
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     #include "SFML/System/Android/Activity.hpp"
 
     #include <mutex>
@@ -37,7 +37,7 @@ namespace EglContextImpl
 {
 [[nodiscard]] EGLDisplay getInitializedDisplay()
 {
-#if defined(SFML_SYSTEM_ANDROID)
+#if defined(SFML_SYSTEM_ANDROID_NATIVEACTIVITY)
 
     // On Android, its native activity handles this for us
     sf::priv::ActivityStates& states = sf::priv::getActivity();
@@ -70,7 +70,7 @@ bool ensureInit()
         {
             // At this point, the failure is unrecoverable
             // Dump a message to the console and let the application terminate
-            priv::errMsg("Failed to load EGL entry points");
+            sf::priv::errMsg("Failed to load EGL entry points");
 
             SFML_BASE_ASSERT(false);
 
@@ -125,13 +125,13 @@ EGLConfig getBestConfig(EGLDisplay display, unsigned int bitsPerPixel, const sf:
     // Determine the number of available configs
     EGLint configCount = 0;
     if (const auto rc = eglCheck(eglGetConfigs(display, nullptr, 0, &configCount)); rc == EGL_FALSE)
-        priv::errMsg("Failed to get EGL configs (1st call)");
+        sf::priv::errMsg("Failed to get EGL configs (1st call)");
 
     // Retrieve the list of available configs
     sf::base::Vector<EGLConfig> configs(static_cast<sf::base::SizeT>(configCount));
 
     if (const auto rc = eglCheck(eglGetConfigs(display, configs.data(), configCount, &configCount)); rc == EGL_FALSE)
-        priv::errMsg("Failed to get EGL configs (2nd call)");
+        sf::priv::errMsg("Failed to get EGL configs (2nd call)");
 
     // Evaluate all the returned configs, and pick the best one
     int       bestScore = 0x7F'FF'FF'FF;
@@ -216,7 +216,7 @@ EGLConfig getBestConfig(EGLDisplay display, unsigned int bitsPerPixel, const sf:
     eglCheck(eglChooseConfig(display, attributes, &config, 1, &configCount));
 
     if (configCount == 0)
-        priv::errMsg("Failed to get any EGL frame buffer configurations");
+        sf::priv::errMsg("Failed to get any EGL frame buffer configurations");
 
     return config;
 #endif
@@ -280,7 +280,7 @@ EglContext::EglContext(unsigned int                          id,
 {
     EglContextImpl::ensureInit();
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
 
     // On Android, we must save the created context
     ActivityStates&       states = getActivity();
@@ -300,7 +300,7 @@ EglContext::EglContext(unsigned int                          id,
     // Create EGL context
     createContext(shared);
 
-#if !defined(SFML_SYSTEM_ANDROID)
+#if !defined(SFML_SYSTEM_ANDROID_NATIVEACTIVITY)
 
     // Create EGL surface (except on Android because the window is created
     // asynchronously, its activity manager will call it for us)

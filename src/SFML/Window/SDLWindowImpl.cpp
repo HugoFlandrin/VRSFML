@@ -534,6 +534,12 @@ base::UniquePtr<SDLWindowImpl> SDLWindowImpl::create(WindowSettings windowSettin
             errMsg("Creating two fullscreen windows is not allowed, switching to windowed mode");
             windowSettings.fullscreen = false;
         }
+        else if (VideoModeUtils::getFullscreenModes().empty())
+        {
+            // E.g. Android: SDL reports no fullscreen video mode (the window always covers the
+            // whole screen anyway), so there is nothing to validate the requested mode against.
+            windowSettings.fullscreen = false;
+        }
         else
         {
             // TODO P0: get refresh rate from user

@@ -39,9 +39,9 @@ include(cmake/Config.cmake)
 include(GNUInstallDirs)
 
 # disable static libraries on Android
-if(SFML_OS_ANDROID)
-    set(BUILD_SHARED_LIBS ON)
-endif()
+# Android builds static libraries too (they are linked into the application's single shared
+# library, together with a static SDL3). Forcing shared libraries here broke the export macros
+# of Thread.hpp with recent clang versions.
 
 # suppress annoying warnings on windows
 if(SFML_OS_WINDOWS)

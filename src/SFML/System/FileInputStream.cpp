@@ -11,7 +11,7 @@
 #include "SFML/Base/PassKey.hpp"
 #include "SFML/Base/UniquePtr.hpp"
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     #include "SFML/System/Android/Activity.hpp"
     #include "SFML/System/Android/ResourceStream.hpp"
 #endif
@@ -45,7 +45,7 @@ FileInputStream& FileInputStream::operator=(FileInputStream&&) noexcept = defaul
 ////////////////////////////////////////////////////////////
 base::Optional<FileInputStream> FileInputStream::open(const Path& filename)
 {
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     if (priv::getActivityStatesPtr() != nullptr)
     {
         auto androidFile = base::makeUnique<priv::ResourceStream>();
@@ -68,7 +68,7 @@ base::Optional<FileInputStream> FileInputStream::open(const Path& filename)
 ////////////////////////////////////////////////////////////
 base::Optional<base::SizeT> FileInputStream::read(void* data, base::SizeT size)
 {
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     if (priv::getActivityStatesPtr() != nullptr)
     {
         SFML_BASE_ASSERT(m_androidFile != nullptr);
@@ -84,7 +84,7 @@ base::Optional<base::SizeT> FileInputStream::read(void* data, base::SizeT size)
 ////////////////////////////////////////////////////////////
 base::Optional<base::SizeT> FileInputStream::seek(base::SizeT position)
 {
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     if (priv::getActivityStatesPtr() != nullptr)
     {
         SFML_BASE_ASSERT(m_androidFile != nullptr);
@@ -104,7 +104,7 @@ base::Optional<base::SizeT> FileInputStream::seek(base::SizeT position)
 ////////////////////////////////////////////////////////////
 base::Optional<base::SizeT> FileInputStream::tell()
 {
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     if (priv::getActivityStatesPtr() != nullptr)
     {
         SFML_BASE_ASSERT(m_androidFile != nullptr);
@@ -122,7 +122,7 @@ base::Optional<base::SizeT> FileInputStream::tell()
 ////////////////////////////////////////////////////////////
 base::Optional<base::SizeT> FileInputStream::getSize()
 {
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     if (priv::getActivityStatesPtr() != nullptr)
     {
         SFML_BASE_ASSERT(m_androidFile != nullptr);
@@ -155,7 +155,7 @@ FileInputStream::FileInputStream(base::PassKey<FileInputStream>&&, base::UniqueP
 
 
 ////////////////////////////////////////////////////////////
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
 FileInputStream::FileInputStream(base::PassKey<FileInputStream>&&, base::UniquePtr<priv::ResourceStream>&& androidFile) :
     m_androidFile(SFML_BASE_MOVE(androidFile))
 {

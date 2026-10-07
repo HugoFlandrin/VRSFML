@@ -12,7 +12,7 @@
 
 #if defined(SFML_SYSTEM_WINDOWS) || defined(SFML_SYSTEM_LINUX) || defined(SFML_SYSTEM_FREEBSD) || \
     defined(SFML_SYSTEM_OPENBSD) || defined(SFML_SYSTEM_NETBSD) || defined(SFML_SYSTEM_MACOS) ||  \
-    defined(SFML_SYSTEM_EMSCRIPTEN)
+    defined(SFML_SYSTEM_EMSCRIPTEN) || defined(SFML_SYSTEM_ANDROID)
 
     #include "SFML/Window/Stub/StubSensorImpl.hpp"
 

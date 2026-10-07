@@ -20,7 +20,7 @@
 #include <cstdio> // TODO P2: try to remove
 
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
 namespace sf::priv
 {
 class SFML_SYSTEM_API ResourceStream;
@@ -121,7 +121,7 @@ public:
     ////////////////////////////////////////////////////////////
     explicit FileInputStream(base::PassKey<FileInputStream>&&, base::UniquePtr<std::FILE, FileCloser>&& file);
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     ////////////////////////////////////////////////////////////
     /// \private
     ////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_SYSTEM_ANDROID_NATIVEACTIVITY
     base::UniquePtr<priv::ResourceStream> m_androidFile;
 #endif
 

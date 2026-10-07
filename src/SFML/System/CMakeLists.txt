@@ -24,10 +24,8 @@ if(SFML_OS_WINDOWS)
 else()
     file(GLOB PLATFORM_SRC CONFIGURE_DEPENDS "${SRCROOT}/Unix/*.cpp" "${SRCROOT}/Unix/*.hpp" "${SRCROOT}/Unix/*.inl")
 
-    if(SFML_OS_ANDROID)
-        file(GLOB ANDROID_SRC CONFIGURE_DEPENDS "${SRCROOT}/Android/*.cpp" "${SRCROOT}/Android/*.hpp" "${SRCROOT}/Android/*.inl")
-        list(APPEND PLATFORM_SRC ANDROID_SRC)
-    endif()
+    # Note: System/Android/* is the legacy NativeActivity glue inherited from SFML. The window and the
+    # GL context go through SDL3 now, so that code is not compiled (see SFML_SYSTEM_ANDROID_NATIVEACTIVITY).
 endif()
 
 find_package(Threads REQUIRED)
