@@ -50,6 +50,11 @@ endif()
 if(SFML_OS_ANDROID)
     # glad sources
     target_include_directories(sfml-system SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/glad/include")
+
+    # AndroidAssets.cpp reads the APK's assets through SDL (SDL_IOFromFile). The SDL3::SDL3 target is
+    # created later, by src/SFML/Window/CMakeLists.txt, and resolved when the build files are generated
+    # (same BUILD_INTERFACE trick as sfml-window, so that it stays out of the install export sets).
+    target_link_libraries(sfml-system PRIVATE $<BUILD_INTERFACE:SDL3::SDL3>)
 endif()
 
 target_link_libraries(sfml-system PRIVATE Threads::Threads)

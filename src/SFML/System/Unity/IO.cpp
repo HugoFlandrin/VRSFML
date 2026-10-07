@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////
 #include "SFML/System/IO.hpp"
 
+#include "SFML/System/AndroidAssets.hpp"
 #include "SFML/System/Err.hpp"
 #include "SFML/System/FileUtils.hpp"
 #include "SFML/System/Path.hpp"
@@ -410,6 +411,47 @@ template <typename Filename, typename T>
 bool readFromFileImpl(const Filename& filename, T& target, const bool isAppend)
 {
     SFML_BASE_ASSERT(!isAppend || SFML_BASE_IS_SAME(T, sf::base::Vector<char>));
+
+#ifdef SFML_SYSTEM_ANDROID
+    // The APK's assets are not files on disk: read them through SDL (which falls back to regular files)
+    {
+        const auto             androidPath = toUtf8FilenameForStdio(filename);
+        sf::priv::AndroidFile  androidFile;
+
+        if (sf::priv::androidOpenFile(androidPath.c_str(), androidFile))
+        {
+            SFML_BASE_SCOPE_GUARD({ sf::priv::androidCloseFile(androidFile); });
+
+            if (androidFile.size == 0u)
+            {
+                if (!isAppend)
+                    target.clear();
+
+                return true;
+            }
+
+            bool complete = true;
+
+            dispatchReadFileContentsIntoBufferImpl(target,
+                                                   androidFile.size,
+                                                   isAppend,
+                                                   [&](char* const dst, const sf::base::SizeT count)
+                                                   {
+                                                       const sf::base::SizeT got = sf::priv::androidReadFile(androidFile, dst, count);
+                                                       complete                  = got == count;
+                                                       return got;
+                                                   });
+
+            if (!complete)
+            {
+                sf::priv::errMsg("Failed to read all of file '{}'\n", filename);
+                return false;
+            }
+
+            return true;
+        }
+    }
+#endif
 
 #if SFML_PRIV_IO_NATIVE_BACKEND == 0 // Fallback
     return readFromFileFallback(filename, target, isAppend);

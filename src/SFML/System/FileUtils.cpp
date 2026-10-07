@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////
 #include "SFML/System/FileUtils.hpp"
 
+#include "SFML/System/AndroidAssets.hpp"
 #include "SFML/System/Path.hpp"
 
 #ifdef SFML_SYSTEM_WINDOWS
@@ -14,6 +15,7 @@
 #endif
 
 #include <cstdio>
+#include <cstring>
 
 
 namespace sf
@@ -21,6 +23,16 @@ namespace sf
 ////////////////////////////////////////////////////////////
 std::FILE* openFile(const Path& filename, const char* const mode)
 {
+#ifdef SFML_SYSTEM_ANDROID
+    // Read-only opens go through SDL first: it reads the APK's assets (relative paths) and falls back to
+    // regular files, which is what `fopen` alone cannot do for assets.
+    if (mode[0] == 'r' && std::strchr(mode, '+') == nullptr)
+    {
+        if (std::FILE* const file = priv::androidOpenStdio(filename.c_str()))
+            return file;
+    }
+#endif
+
 #ifdef SFML_SYSTEM_WINDOWS
     std::wstring wmode;
     for (const char* p = mode; *p != '\0'; ++p)
