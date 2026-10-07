@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////
 #include "SFML/Window/SDLLayer.hpp"
 
+#include "SFML/Window/AppLifecycleWatch.hpp"
 #include "SFML/Window/Cursor.hpp"
 #include "SFML/Window/DisplayOrientation.hpp"
 #include "SFML/Window/Keyboard.hpp"
@@ -605,12 +606,16 @@ SDLLayer::SDLLayer()
         errMsg("`SDL_Init` failed: {}", SDL_GetError());
         base::abort();
     }
+
+    // Feeds `sf::setAppLifecycleCallback` (mobile lifecycle events, delivered synchronously by SDL)
+    installAppLifecycleWatch();
 }
 
 
 ////////////////////////////////////////////////////////////
 SDLLayer::~SDLLayer()
 {
+    removeAppLifecycleWatch();
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
