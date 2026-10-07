@@ -267,7 +267,10 @@ base::Optional<base::I64> Path::getLastWriteTimeSecondsSinceEpoch() const
     if (ec)
         return base::nullOpt;
 
-    const auto sysTime = std::chrono::file_clock::to_sys(ftime);
+    // `std::chrono::file_clock::to_sys` is not implemented by MSVC's STL (any toolset up to 14.44):
+    // use the portable pre-standardization idiom (diff against "now" in both clocks) instead.
+    const auto sysTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        ftime - std::chrono::file_clock::now() + std::chrono::system_clock::now());
     const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(sysTime.time_since_epoch()).count();
     return base::makeOptional(static_cast<base::I64>(seconds));
 }
