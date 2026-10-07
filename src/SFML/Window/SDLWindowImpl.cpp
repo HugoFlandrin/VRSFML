@@ -595,7 +595,29 @@ base::UniquePtr<SDLWindowImpl> SDLWindowImpl::create(WindowSettings windowSettin
         windowSettings.hasTitlebar = true;
 #endif
 
-    SDL_Window* sdlWindowPtr = SDL_CreateWindowWithProperties(makeSDLWindowPropertiesFromWindowSettings(windowSettings));
+#ifdef SFML_SYSTEM_ANDROID
+    // SDL only supports a single window on Android, and `GraphicsContext::create()` already took it
+    // for the hidden window of the shared GL context (see `SDLGlContext`). Instead of creating another
+    // one (which fails with "Android only supports one window"), adopt that window: on Android it is
+    // the activity's surface and always covers the whole screen anyway. The shared GL context keeps
+    // owning it, so this `SDLWindowImpl` must not destroy it (`isExternal`).
+    SDL_Window* const sdlWindowPtr = static_cast<const priv::SDLGlContext&>(WindowContext::getSharedGlContext()).getSDLWindow();
+
+    if (sdlWindowPtr != nullptr && SDLWindowImplImpl::windowImplMap.contains(SDL_GetWindowID(sdlWindowPtr)))
+    {
+        errMsg("Android only supports one window (it is already in use by another `sf::Window`)");
+        return nullptr;
+    }
+
+    constexpr bool windowIsExternal = true;
+
+    if (sdlWindowPtr != nullptr && windowSettings.visible)
+        SDL_ShowWindow(sdlWindowPtr);
+#else
+    SDL_Window* const sdlWindowPtr = SDL_CreateWindowWithProperties(makeSDLWindowPropertiesFromWindowSettings(windowSettings));
+
+    constexpr bool windowIsExternal = false;
+#endif
 
     if (sdlWindowPtr == nullptr)
     {
@@ -606,9 +628,7 @@ base::UniquePtr<SDLWindowImpl> SDLWindowImpl::create(WindowSettings windowSettin
         return nullptr;
     }
 
-    auto* windowImplPtr = new SDLWindowImpl{"window settings",
-                                            static_cast<void*>(sdlWindowPtr),
-                                            /* isExternal */ false};
+    auto* windowImplPtr = new SDLWindowImpl{"window settings", static_cast<void*>(sdlWindowPtr), windowIsExternal};
 
 #ifdef SFML_SYSTEM_EMSCRIPTEN
     // This seems necessary on Emscripten to set the initial canvas size
