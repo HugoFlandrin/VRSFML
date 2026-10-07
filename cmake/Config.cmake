@@ -98,7 +98,7 @@ elseif(${EMSCRIPTEN})
 
         -pthread     # Enable threading support
 
-        --shell-file=${CMAKE_SOURCE_DIR}/emscripten/shell.html
+        --shell-file=${CMAKE_CURRENT_LIST_DIR}/../emscripten/shell.html
     )
 
     # -sEXCEPTION_STACK_TRACES=1 # Exceptions will contain stack traces and uncaught exceptions will display stack traces
@@ -178,7 +178,7 @@ elseif(${EMSCRIPTEN})
 
         --emrun                             # Add native support for `emrun` (I/O capture)
 
-        --shell-file=${CMAKE_SOURCE_DIR}/emscripten/shell.html
+        --shell-file=${CMAKE_CURRENT_LIST_DIR}/../emscripten/shell.html
     )
 
 else()
